@@ -35,7 +35,8 @@ You'll need the following to setup the action:
 - GitHub API Docs: [GitHub GraphQL API Docs](https://docs.github.com/en/graphql)
 - GitHub Graph QL Explorer: [GitHub GraphQL API Explorer](https://docs.github.com/en/graphql/overview/explorer)
 2. Add a secret named `ADO_PERSONAL_ACCESS_TOKEN` containing an [Azure Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate) with "read & write" permission for Work Items
-3. Install the [Azure Boards App](https://github.com/marketplace/azure-boards) from the GitHub Marketplace.  To enable the app for a repository follow these steps:
+3. Organization secrets named `ADO_GH_SYNC_APP_ID` and `ADO_GH_SYNC_PRIVATE_KEY` set with the `App ID` and `Private Key` for `ADO GH Issue Sync` GitHub App.
+4. Install the [Azure Boards App](https://github.com/marketplace/azure-boards) from the GitHub Marketplace.  To enable the app for a repository follow these steps:
 - Navigate to the organization the repository is in.
 -  Click on "Settings" across the banner below the organization name.
 -  Click on "GitHub Apps" in the menu on the left.
@@ -45,7 +46,7 @@ You'll need the following to setup the action:
 -  From the menu select the project you want to connect.  You can use the search feature to narrow down the choices.
 -  Click "Continue"
 -  Pick the correct Azure DevOps repository to add the Azure Boards feature.
-4. Add a workflow like the example below.
+5. Add a workflow like the example below.
 -  Note the global env values.  Those are there to make the ado-sync vairables easier to set.
 
 ### Action Setup
