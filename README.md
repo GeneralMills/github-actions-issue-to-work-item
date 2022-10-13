@@ -68,25 +68,36 @@ on:
       [created, edited, deleted]
 
 env:
-  GH_TOKEN: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
   ado_token: "${{ secrets.ADO_PERSONAL_ACCESS_TOKEN }}"
-  github_token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
   azure_org_name: "GeneralMills"
   azure_project_name: "Cloverleaf"
   azure_area_subname: "Cloud Platform"
-  azure_parent_id: "840193"
+  azure_parent_id: "642868"
+  app_id: "${{ secrets.ADO_GH_SYNC_APP_ID }}"
+  app_private_key: "${{ secrets.ADO_GH_SYNC_PRIVATE_KEY }}"
 
 jobs:
   get-issue-info:
     runs-on: gcp
     container: docker.generalmills.com/k8s-ghcli:44-dea02e4
+    name: GitHub Issue Sync
     outputs:
       gh_iteration: ${{ steps.get-issue-info.outputs.iteration }}
       gh_story_points: ${{ steps.get-issue-info.outputs.story_points }}
       gh_current_sprint: ${{ steps.get-issue-info.outputs.current_sprint }}
       gh_assignee: ${{ steps.get-issue-info.outputs.assignee }}
     steps:
-    - id: get-issue-info
+    - name: Get GitHub App Auth
+      id: gh_app_auth
+      uses: peter-murray/workflow-application-token-action@v2
+      with:
+          application_id: "${{ secrets.ADO_GH_SYNC_APP_ID }}"
+          application_private_key: "${{ secrets.ADO_GH_SYNC_PRIVATE_KEY }}"
+          organization: "${{ github.repository_owner }}"
+    - name: Run GraphQL Queries
+      id: get-issue-info
+      env:
+        GITHUB_TOKEN: ${{ steps.gh_app_auth.outputs.token }}
       run: |
         gh api graphql -f query='query get_iteration_title ($owner:String!, $repo:String!, $gh_issue_number:Int!) {
           repository(name: $repo, owner: $owner) {
@@ -138,36 +149,32 @@ jobs:
           }' -F owner=${{ github.repository_owner }} -F assignee="$github_assignee" > name.json
           first=$(jq -r '.data.organization.samlIdentityProvider.externalIdentities.edges[0].node.samlIdentity.givenName' name.json)
           last=$(jq -r '.data.organization.samlIdentityProvider.externalIdentities.edges[0].node.samlIdentity.familyName' name.json)
-          echo ::set-output name=assignee::"$first $last"
+          echo "assignee=$first $last" >> $GITHUB_ENV
           echo "GitHub Assignee Name: $first $last"
         fi
-
         curl -u :"${{ secrets.ADO_PERSONAL_ACCESS_TOKEN }}"  'https://dev.azure.com/${{ env.azure_org_name }}/${{ env.azure_project_name }}/_apis/work/teamsettings/iterations?$timeframe=current&api-version=6.0' > currentsprint.json
-        echo ::set-output name=iteration::$(jq -r '.data.repository.issue.projectItems.nodes[0].sprint.title' result.json)
-        echo ::set-output name=story_points::$(jq -r '.data.repository.issue.projectItems.nodes[0].story.number' result.json)
-        echo ::set-output name=current_sprint::$(jq -r '.value[0].name' currentsprint.json)
+        echo "iteration=$(jq -r '.data.repository.issue.projectItems.nodes[0].sprint.title' result.json)" >> $GITHUB_ENV
+        echo "story_points=$(jq -r '.data.repository.issue.projectItems.nodes[0].story.number' result.json)" >> $GITHUB_ENV
+        echo "current_sprint=$(jq -r '.value[0].name' currentsprint.json)" >> $GITHUB_ENV
         echo $(jq -r '.data.repository.issue.assignees.nodes[0].login' result.json)
-
-  ado-sync:
-    runs-on: gcp
-    needs: get-issue-info
-    steps:
-    - uses: GeneralMills/github-actions-issue-to-work-item@master
+    - name: Synch GH Issue to ADO
+      id: ado-sync
+      uses: GeneralMills/github-actions-issue-to-work-item@master
       env:
         ado_token: "${{ secrets.ADO_PERSONAL_ACCESS_TOKEN }}"
-        github_token: "${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}"
+        github_token: "${{ steps.gh_app_auth.outputs.token }}"
         ado_organization: "${{ env.azure_org_name }}"
         ado_project: "${{ env.azure_project_name }}"
-        ado_area_path: "${{ env.azure_project_name }}\\$ {{ env.azure_area_subname }}"
+        ado_area_path: "${{ env.azure_project_name }}\\${{ env.azure_area_subname }}"
         ado_wit: "User Story"
         ado_new_state: "New"
         ado_active_state: "Active"
         ado_close_state: "Closed"
         ado_parent: "${{ env.azure_parent_id }}"
-        ado_current_sprint: "${{ env.azure_project_name }}\\${{ needs.get-issue-info.outputs.gh_current_sprint }}"
-        ado_iteration: "${{ env.azure_project_name }}\\${{ needs.get-issue-info.outputs.gh_iteration }}"
-        ado_story_points: "${{ needs.get-issue-info.outputs.gh_story_points }}"
-        ado_assignee: "${{ needs.get-issue-info.outputs.gh_assignee }}"
+        ado_current_sprint: "${{ env.azure_project_name }}\\${{ env.current_sprint }}"
+        ado_iteration: "${{ env.azure_project_name }}\\${{ env.sprint }}"
+        ado_story_points: "${{ env.story_points }}"
+        ado_assignee: "${{ env.assignee }}"
         ado_bypassrules: true
         log_level: 400
 
