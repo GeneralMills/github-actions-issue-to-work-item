@@ -228,7 +228,7 @@ async function create(vm) {
     patchDocument.push({
       op: "add",
       path: "/fields/System.AssignedTo",
-      value: vm.env.assignee
+      value: vm.env.ado_assignee
     });
   }
 
@@ -363,7 +363,7 @@ async function update(vm, workItem) {
     patchDocument.push({
       op: "add",
       path: "/fields/System.AssignedTo",
-      value: vm.env.assignee
+      value: vm.env.ado_assignee
     });
   }
 
