@@ -207,21 +207,15 @@ async function create(vm) {
   }
 
   // if iteration path is not empty, set it
-  if ((vm.env.ado_iteration).match(/^((?!\\).)*$/)) {
+  if (vm.env.ado_iteration != '') {
     patchDocument.push({
       op: "add",
       path: "/fields/System.IterationPath",
       value: vm.env.ado_iteration
     });
   }
-	else {
-		patchDocument.push({
-      op: "add",
-      path: "/fields/System.IterationPath",
-      value: vm.env.ado_current_sprint
-    });
-  }
-	// if story_points path is not empty, set it
+
+  // if story_points path is not empty, set it
   if (vm.env.ado_story_points != "null") {
 	patchDocument.push({
 	op: "add",
@@ -229,16 +223,7 @@ async function create(vm) {
 	value: vm.env.ado_story_points
 	 });
   }
-	
-	// if story_points is null, set it to 1
-  if (vm.env.ado_story_points == "null") {
-    patchDocument.push({
-      op: "add",
-      path: "/fields/Microsoft.VSTS.Scheduling.StoryPoints",
-      type: "double",
-      value: "1"
-    });
-  }
+
   if (vm.env.ado_assignee != "null null"){
     patchDocument.push({
       op: "add",
@@ -356,20 +341,14 @@ async function update(vm, workItem) {
   }
 
   // if iteration path is not empty, set it
-  if ((vm.env.ado_iteration).match(/^((?!\\null).)*$/)) {
+  if (vm.env.ado_iteration != "") {
       patchDocument.push({
       op: "add",
       path: "/fields/System.IterationPath",
       value: vm.env.ado_iteration
     });
   }
-	else {
-    patchDocument.push({
-      op: "add",
-      path: "/fields/System.IterationPath",
-      value: vm.env.ado_current_sprint
-    });
-  }
+
   // if story_points is not empty, set it
   if (vm.env.ado_story_points != "null") {
     patchDocument.push({
@@ -433,38 +412,23 @@ async function comment(vm, workItem) {
       value: `<a href="${vm.comment_url}" target="_new">GitHub issue comment added</a> by ${vm.user}</br></br>${html}`,
     });
   }
+
   // if iteration path is not empty, set it
-  if ((vm.env.ado_iteration).match(/^((?!\\null).)*$/)) {
+  if (vm.env.ado_iteration != "") {
       patchDocument.push({
       op: "add",
       path: "/fields/System.IterationPath",
       value: vm.env.ado_iteration
     });
   }
-	else {
-    patchDocument.push({
-      op: "add",
-      path: "/fields/System.IterationPath",
-      value: vm.env.ado_current_sprint
-    });
-  }
+  
   // if story_points is not null, set it
-  if (vm.env.ado_story_points != "null") {
+  if (vm.env.ado_story_points != "") {
     patchDocument.push({
       op: "add",
       path: "/fields/Microsoft.VSTS.Scheduling.StoryPoints",
       type: "double",
       value: vm.env.ado_story_points
-    });
-  }
-  
-	// if story_points is null, set it to 1
-  if (vm.env.ado_story_points == "null") {
-    patchDocument.push({
-      op: "add",
-      path: "/fields/Microsoft.VSTS.Scheduling.StoryPoints",
-      type: "double",
-      value: "1"
     });
   }
 
