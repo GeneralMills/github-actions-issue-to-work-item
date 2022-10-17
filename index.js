@@ -221,7 +221,7 @@ async function create(vm) {
 	op: "add",
 	path: "/fields/Microsoft.VSTS.Scheduling.StoryPoints",
 	value: vm.env.ado_story_points
-	 });
+	});
   }
 
   if (vm.env.ado_assignee != "null"){
@@ -350,7 +350,7 @@ async function update(vm, workItem) {
   }
 
   // if story_points is not empty, set it
-  if (vm.env.points != "null") {
+  if (vm.env.ado_story_points != "null") {
     patchDocument.push({
       op: "add",
       path: "/fields/Microsoft.VSTS.Scheduling.StoryPoints",
@@ -415,12 +415,12 @@ async function comment(vm, workItem) {
   }
   
   // if story_points is not null, set it
-  if (vm.env.points != "") {
+  if (vm.env.ado_story_points != "") {
     patchDocument.push({
       op: "add",
       path: "/fields/Microsoft.VSTS.Scheduling.StoryPoints",
       type: "double",
-      value: vm.env.points
+      value: vm.env.ado_story_points
     });
   }
 
@@ -745,8 +745,8 @@ function getValuesFromPayload(payload, env) {
 			bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
 			ado_parent: env.ado_parent != undefined ? env.ado_parent : "",
 			ado_iteration: env.ado_iteration != undefined ? env.ado_iteration : "",
-			ado_story_points: env.story_points != undefined ? env.story_points: "",
-			ado_assignee: env.github_assignee != undefined ? env.github_assignee: "",
+			ado_story_points: env.ado_story_points != undefined ? env.ado_story_points: "",
+			ado_assignee: env.ado_assignee != undefined ? env.ado_assignee: "",
 			logLevel: env.log_level != undefined ? env.log_level : 100
 		}
 	};
