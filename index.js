@@ -752,10 +752,9 @@ function getValuesFromPayload(payload, env) {
 			activeState: env.ado_active_state != undefined ? env.ado_active_state : "Active",
 			bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
 			ado_parent: env.ado_parent != undefined ? env.ado_parent : "",
-			ado_iteration: env.ado_iteration != undefined ? env.ado_iteration : "",
-			ado_story_points: env.ado_story_points != undefined ? env.ado_story_points: "1",
-			ado_current_sprint: env.ado_current_sprint != undefined ? env.ado_current_sprint: "",
-      			ado_assignee: env.ado_assignee != undefined ? env.ado_assignee: "",
+			ado_iteration: env.sprint != undefined ? env.sprint : "",
+			ado_story_points: env.points != undefined ? env.points: "1",
+      ado_assignee: env.assignee != undefined ? env.assignee: "",
 			logLevel: env.log_level != undefined ? env.log_level : 100
 		}
 	};
