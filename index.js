@@ -207,7 +207,7 @@ async function create(vm) {
   }
 
   // if iteration path is not empty, set it
-  if (vm.env.ado_iteration != '') {
+  if (vm.env.ado_iteration != "") {
     patchDocument.push({
       op: "add",
       path: "/fields/System.IterationPath",
@@ -288,7 +288,7 @@ async function create(vm) {
 async function update(vm, workItem) {
   if (vm.env.logLevel >= 200) console.log(`Starting 'update' method...`);
 
-  var body = vm.body.replace(`AB#${workItem.id}`, '').trim();
+  var body = vm.body.replace(`AB#${workItem.id}`, "").trim();
   var converter = new showdown.Converter();
   var html = converter.makeHtml(body);  
   converter = null;
@@ -528,7 +528,7 @@ async function label(vm, workItem) {
     patchDocument.push({
       op: "add",
       path: "/fields/System.Tags",
-      value: workItem.fields["System.Tags"] + ", " + vm.label.replace(/\p{Emoji}/gu, ''),
+      value: workItem.fields["System.Tags"] + ", " + vm.label.replace(/\p{Emoji}/gu, ""),
     });
   }
 
@@ -733,7 +733,7 @@ function getValuesFromPayload(payload, env) {
 		repo_url: payload.repository.html_url != undefined ? payload.repository.html_url : "",
 		closed_at: payload.issue.closed_at != undefined ? payload.issue.closed_at : null,
 		owner: payload.repository.owner != undefined ? payload.repository.owner.login : "",
-		sender_login: payload.sender.login != undefined ? payload.sender.login : '',
+		sender_login: payload.sender.login != undefined ? payload.sender.login : "",
 		label: "",
 		comment_text: "",
 		comment_url: "",
