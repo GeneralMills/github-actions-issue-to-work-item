@@ -207,11 +207,11 @@ async function create(vm) {
   }
 
   // if iteration path is not empty, set it
-  if (vm.env.ado_iteration != "") {
+  if (vm.env.sprint != "") {
     patchDocument.push({
       op: "add",
       path: "/fields/System.IterationPath",
-      value: vm.env.ado_iteration
+      value: vm.env.sprint
     });
   }
 
@@ -224,11 +224,11 @@ async function create(vm) {
 	 });
   }
 
-  if (vm.env.ado_assignee != "null null"){
+  if (vm.env.assignee != "null null"){
     patchDocument.push({
       op: "add",
       path: "/fields/System.AssignedTo",
-      value: vm.env.ado_assignee
+      value: vm.env.assignee
     });
   }
 
@@ -350,7 +350,7 @@ async function update(vm, workItem) {
   }
 
   // if story_points is not empty, set it
-  if (vm.env.ado_story_points != "null") {
+  if (vm.env.points != "null") {
     patchDocument.push({
       op: "add",
       path: "/fields/Microsoft.VSTS.Scheduling.StoryPoints",
@@ -358,20 +358,12 @@ async function update(vm, workItem) {
       value: vm.env.ado_story_points
     });
   }
-	// if story_points is null, set it to 1
-  if (vm.env.ado_story_points == "null") {
-    patchDocument.push({
-      op: "add",
-      path: "/fields/Microsoft.VSTS.Scheduling.StoryPoints",
-      type: "double",
-      value: "1"
-    });
-  }
-  if (vm.env.ado_assignee != "null null"){
+	
+  if (vm.env.assignee != "null null"){
     patchDocument.push({
       op: "add",
       path: "/fields/System.AssignedTo",
-      value: vm.env.ado_assignee
+      value: vm.env.assignee
     });
   }
 
@@ -423,12 +415,12 @@ async function comment(vm, workItem) {
   }
   
   // if story_points is not null, set it
-  if (vm.env.ado_story_points != "") {
+  if (vm.env.points != "") {
     patchDocument.push({
       op: "add",
       path: "/fields/Microsoft.VSTS.Scheduling.StoryPoints",
       type: "double",
-      value: vm.env.ado_story_points
+      value: vm.env.points
     });
   }
 
@@ -753,8 +745,8 @@ function getValuesFromPayload(payload, env) {
 			bypassRules: env.ado_bypassrules != undefined ? env.ado_bypassrules : false,
 			ado_parent: env.ado_parent != undefined ? env.ado_parent : "",
 			ado_iteration: env.sprint != undefined ? env.sprint : "",
-			ado_story_points: env.points != undefined ? env.points: "1",
-      ado_assignee: env.assignee != undefined ? env.assignee: "",
+			ado_story_points: env.points != undefined ? env.points: "",
+			ado_assignee: env.assignee != undefined ? env.assignee: "",
 			logLevel: env.log_level != undefined ? env.log_level : 100
 		}
 	};
